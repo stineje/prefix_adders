@@ -1,0 +1,36 @@
+#
+# OSU/AFRL Mentor Setup Script
+#
+
+setenv MGC_HOME /import/mentor
+setenv MGC_PDF_READER evince
+setenv MGC_HTML_BROWSER firefox
+
+if ($?LD_LIBRARY_PATH) then
+    echo "Your LD_LIBRARY_PATH is set up correctly"
+else
+    setenv LD_LIBRARY_PATH /usr/lib:/usr/X11R6/lib:/lib:/usr/local/lib
+endif
+
+#============= Aliases =================
+alias prepend 'if (-d \!:2) if ("$\!:1" \!~ *"\!:2"*) setenv \!:1 "\!:2":${\!:1}'
+alias extend  'if (-d \!:2) if ("$\!:1" \!~ *"\!:2"*) setenv \!:1 ${\!:1}:\!:2'
+#=======================================
+
+#======== Mentor Tool Setup ============
+
+setenv LM_LICENSE_FILE 1717@trelaina.ecen.okstate.edu
+echo "Your Mentor Graphics setup is also completed correctly"
+
+# Modelsim
+setenv MODSIM ${MGC_HOME}/ModelSim_10.6a/modeltech
+setenv MGCCAL ${MGC_HOME}/aoi_cal_2018.4_34.26/
+setenv MGC_DOC_PATH $MODSIM/docs
+setenv CALIBRE_HOME ${MGC_HOME}/aoi_cal_2018.4_34.26/
+extend PATH $MODSIM/bin
+extend PATH $MGCCAL/bin
+
+unalias prepend
+unalias extend
+
+

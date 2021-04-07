@@ -1,0 +1,4 @@
+source ../scripts/cadence.cshrc
+source ../scripts/magic.cshrc
+source ../scripts/synopsys_x64.cshrc
+source ../scripts/mentor_x64.cshrc

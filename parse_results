@@ -1,0 +1,103 @@
+#!/bin/python3
+
+import argparse
+from pint import UnitRegistry
+import os
+import gzip
+
+#tex_name=["Designware","Ripple-carry","Ling\_BK","Ling\_SK","Ling\_KS","Ling\_HC","Ling\_Kn","Ling\_LF","Ling\_DH"]
+#eda_name=["design_ware","ripple_carry","ling_brentkung","ling_sklansky","link_koggestone","ling_hancarlson","ling_ladnerficsher","ling_harris"]
+
+def init():
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("--width",type=str,default="32")
+    argparser.add_argument("--tex_names",type=str,nargs="*",default=["DesignWare"])
+    argparser.add_argument("--eda_names",type=str,nargs="*",default=["design_ware"])
+
+    args=argparser.parse_args()
+
+    return args.width,args.tex_names,args.eda_names
+
+def parsePath(width,name):
+
+    ureg = UnitRegistry()
+    Q_ = ureg.Quantity
+    path="flow/pnr_"+width+'_'+name
+
+    return(path,Q_)
+
+def parseArea(path,Q_):
+    path=path+"/all_area.txt"
+    with open(path) as f:
+        while True:
+            l=f.readline().split()
+            if(len(l)>0 and l[0]=='0'):
+                return Q_(float(l[-1]),'um^2')
+
+def parsePower(path,Q_):
+    path=path+"/RPT/average_power_all.rpt"
+    with open(path) as f:
+        while True:
+            l=f.readline().split()
+            if(len(l)>0 and l[0]=='VDD'):
+                return Q_(float(l[-3]),'mW'),Q_(float(l[-2]),'mW')
+
+def parseTiming(path,Q_):
+    path=path+"/RPT/signoff_all.tarpt.gz"
+#    path=path+"/RPT/place_all.tarpt.gz"
+    skip_paths=1
+    offset=0
+    slack=0
+    with gzip.open(path) as f:
+        while True:
+            l=[x.decode("utf-8") for x in f.readline().split()]
+            if len(l)==0:
+                break
+            if len(l)<2:
+                continue
+            if(offset==0 and l[1]=="Phase"):
+                   offset=float(l[3])
+            if(slack==0 and l[1]=="Slack"):
+                if skip_paths>0:
+                    skip_paths-=1
+                else:
+                    slack=float(l[3])
+                    break
+    return Q_(offset,'ns'),Q_(slack,'ns')
+
+def add_tabs(s,n,not_first=True):
+    s=str(s)
+    if len(s)+not_first<n*8:
+        s=s+'\t'
+        return add_tabs(s,n-1)
+    return s
+
+def main():
+    w,ts,es=init()
+    print("\\hline")
+    for e,t in zip(es,ts):
+        path,Q_=parsePath(w,e)
+
+        area=parseArea(path,Q_)
+        leak,total_power=parsePower(path,Q_)
+        offset,slack=parseTiming(path,Q_)
+
+        delay=offset-slack
+        adj_power=total_power*offset.m/delay.m
+        energy=adj_power*delay
+        edp=energy*delay
+
+        data=[]
+        data.append(add_tabs(t,1,False))
+        data.append(add_tabs(w,0))
+        data.append(add_tabs(round(area.to('um^2').m,0),1))
+        data.append(add_tabs('{:.3f}'.format(delay.to('ns').m),0))
+        data.append(add_tabs('{:.1f}'.format(adj_power.to('uW').m),0))
+        data.append(add_tabs('{:.3f}'.format(leak.to('uW').m),0))
+        data.append(add_tabs('{:.1f}'.format(energy.to('fJ').m),0))
+        data.append(add_tabs('{:.1f}'.format(edp.to('fJ*ns').m),0))
+        print(*data,sep='\t&',end='')
+        print("\\\\\\hline")
+
+if __name__=="__main__":
+    main()

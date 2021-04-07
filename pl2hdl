@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# How to use:
+# ./pl2hdl NUMBER_OF_BITS_HERE
+# Example:
+# ./pl2hdl 32
+
+mkdir -p AdderHDL
+cd AdderScripts
+for i in *.pl; do
+    mkdir -p ../AdderHDL/$1
+#    perl $i -x $1 -m ${i%%.*} > ../AdderHDL/$1/${i%%.*}.v
+    perl $i -x $1 -m adder > ../AdderHDL/$1/${i%%.*}.v
+done
