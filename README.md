@@ -3,5 +3,6 @@ This work is from Oklahoma State University VLSI Computer Architecture Research 
 
 Various prefix adder scripts
 
-Teo Ene (teo.ene@okstate.edu_
-James Stine (james.stine@okstate.edu)
+Teo Ene (teo.ene@okstate.edu)<br>
+James Stine (james.stine@okstate.edu)<br>
+
