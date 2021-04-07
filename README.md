@@ -1,7 +1,7 @@
 # prefix_adders
-Parallel-prefix adders in 90nm
-Oklahoma State University
-VLSI Computer Architecture Research Group
+Parallel-prefix adders in 90nm<br>
+Oklahoma State University<br>
+VLSI Computer Architecture Research Group<br>
 
 To generate HDL for all adder structures at a certain width, simply
 
