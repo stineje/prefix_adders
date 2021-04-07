@@ -3,6 +3,9 @@ Parallel-prefix adders in 90nm<br>
 Oklahoma State University<br>
 VLSI Computer Architecture Research Group<br>
 
+Teo Ene<br>
+James Stine<br>
+
 To generate HDL for all adder structures at a certain width, simply
 
 `make compile WIDTH=<desired width>`
