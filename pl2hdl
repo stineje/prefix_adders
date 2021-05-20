@@ -5,10 +5,15 @@
 # Example:
 # ./pl2hdl 32
 
-mkdir -p AdderHDL
+#mkdir -p AdderHDL
 cd AdderScripts
 for i in *.pl; do
-    mkdir -p ../AdderHDL/$1
+#    mkdir -p ../AdderHDL/$1
+    mkdir -p ../../flow/designs/src/${i%%.*}_$1
 #    perl $i -x $1 -m ${i%%.*} > ../AdderHDL/$1/${i%%.*}.v
-    perl $i -x $1 -m adder > ../AdderHDL/$1/${i%%.*}.v
+#    perl $i -x $1 -m adder > ../AdderHDL/$1/${i%%.*}.v
+    perl $i -x $1 -m adder > ../../flow/designs/src/${i%%.*}_$1/${i%%.*}_$1.v
+    mkdir -p ../../flow/designs/sky130hs/${i%%.*}_$1
+    sed "s/nick_template/${i%%.*}_$1/" ../config_$1.mk > ../../flow/designs/sky130hs/${i%%.*}_$1/config.mk
+    cp ../constraint.sdc ../../flow/designs/sky130hs/${i%%.*}_$1/
 done
